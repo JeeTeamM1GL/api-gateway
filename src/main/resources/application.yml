@@ -1,0 +1,52 @@
+spring:
+  application:
+    name: api-gateway
+  main:
+    web-application-type: REACTIVE
+    allow-bean-definition-overriding: true
+  cloud:
+    discovery:
+      enabled: true
+    config:
+      enabled: false
+    gateway:
+      discovery:
+        locator:
+          enabled: true
+      routes:
+        - id: user-service
+          uri: lb:http://USER-SERVICE #http://localhost:8081
+          predicates:
+            - Path=/api/v1/users/**
+          #filters:
+          #  - StripPrefix=1
+        - id: hotel-service
+          uri: lb:http://HOTEL-SERVICE #http://localhost:8082
+          predicates:
+            - Path=/api/v1/hotels/**
+            - Path=/api/v1/rooms/**
+            - Path=/api/v1/commentaires/**
+          #filters:
+          #  - StripPrefix=1
+        - id: reservation-service
+          uri: lb:http://RESERVATION-SERVICE  #http://localhost:8083
+          predicates:
+            - Path=/api/v1/reservations/**
+          #filters:
+          #  - StripPrefix=1
+
+eureka:
+  instance:
+    prefer-ip-address: true
+  client:
+    service-url:
+      defaultZone: http://localhost:8761/eureka
+
+logging:
+  level:
+    org:
+      springframework:
+        security: DEBUG
+
+server:
+  port: 8085
